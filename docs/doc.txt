@@ -1,0 +1,136 @@
+Insurance Quotation and Analysis API Documentation
+
+Overview
+
+This API provides endpoints for managing insurance quotation requests and policy analysis. Built using FastAPI, it employs Pydantic models for robust data validation and ensures efficient processing of quotation data. The service currently operates with in-memory storage for demonstration purposes and is suitable for development, testing, and illustrative scenarios.
+
+Base URL
+
+The API should be hosted locally using FastAPI's Uvicorn server:
+
+uvicorn main:app --reload
+
+This will run the server at:
+
+http://127.0.0.1:8000
+
+API Endpoints
+
+1. Create Quotation
+
+Endpoint:
+
+- POST /quotation
+
+Description:
+
+This endpoint allows users to create a new insurance quotation.
+
+Request Model:
+
+{
+    "name": "John Doe",
+    "city": "New York",
+    "age": 30,
+    "work": "Engineer"
+}
+
+- name (str): Full name of the individual requesting the quotation.
+- city (str): City of residence.
+- age (int): Age of the individual.
+- work (str): Occupation of the individual.
+
+Response Model:
+
+{
+    "quotation_id": "Q1",
+    "data": {
+        "name": "John Doe",
+        "city": "New York",
+        "age": 30,
+        "work": "Engineer"
+    }
+}
+
+- quotation_id (str): Unique identifier for the created quotation.
+- data (Quotation): Echo of the provided quotation details.
+
+2. Analyze Quotation
+
+Endpoint:
+
+- POST /analyze
+
+Description:
+
+This endpoint evaluates whether an insurance policy can be issued based on provided quotation details or an existing quotation identified by quotation_id.
+
+Request Model:
+
+To analyze by quotation ID:
+
+{
+    "quotation_id": "Q1"
+}
+
+To analyze using detailed fields directly:
+
+{
+    "name": "Jane Smith",
+    "city": "Los Angeles",
+    "age": 45,
+    "work": "Teacher"
+}
+
+- quotation_id (Optional[str]): ID referencing a previously created quotation.
+- name, city, age, work (Optional[str, str, int, str]): Direct details used for immediate analysis if quotation_id is not provided.
+
+Response Model:
+
+{
+    "decision": "Policy Issued",
+    "analyzed_data": {
+        "name": "Jane Smith",
+        "city": "Los Angeles",
+        "age": 45,
+        "work": "Teacher"
+    }
+}
+
+- decision (str): Result indicating policy eligibility (Policy Issued or Policy Not Issued).
+- analyzed_data (dict): Detailed quotation information used for analysis.
+
+Business Logic
+
+The policy decision logic embedded within the API assesses:
+
+- Policies are issued for individuals younger than 50 years of age.
+- Occupations labeled as "hazardous" lead to automatic denial of policy issuance.
+
+If the quotation does not meet these criteria, the response indicates Policy Not Issued.
+
+Error Handling
+
+- 404 Not Found: If a quotation referenced by quotation_id does not exist.
+
+{
+    "detail": "Quotation not found"
+}
+
+- 400 Bad Request: If required fields are missing in the direct analysis request.
+
+{
+    "detail": "Missing data fields for analysis"
+}
+
+Use Cases
+
+- Rapid quotation creation and analysis for insurance services.
+- Demonstration or prototype purposes in early-phase application development.
+- Educational environments for illustrating API-driven architectures and validation.
+
+Future Improvements
+
+- Integration with persistent databases for production readiness.
+- Enhanced business logic to accommodate complex insurance rules.
+- Comprehensive security and authentication mechanisms for secure data handling.
